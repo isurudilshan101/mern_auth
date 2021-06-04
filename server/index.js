@@ -10,6 +10,8 @@ const PORT=process.env.PORT || 5000;
 
 app.listen(PORT,()=>console.log(`Server started port : ${PORT}`));
 
+app.use(express.json());
+
 // app.get('/test',(req,res)=>{
 //     res.send("It works!");
 // });
@@ -30,3 +32,6 @@ mongoose.connect(process.env.MDB_CONNECT,
    
     console.log("Connect Successfull");
 });
+
+//set up routers
+app.use("/auth",require("./routers/userRouter"));
