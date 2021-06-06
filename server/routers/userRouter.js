@@ -56,7 +56,7 @@ router.post("/", async(req,res)=>{
            process.env.JWT_SECRET
         );
         
-       console.log(token);
+     //  console.log(token);
 
         //send the token in a http - only cookie
 
@@ -75,7 +75,7 @@ router.post("/", async(req,res)=>{
 });
 
 
-        //login
+       // login
 
 router.post("/login", async (req,res)=>{
     try{
@@ -96,7 +96,7 @@ router.post("/login", async (req,res)=>{
 
         //compare password
 
-            const passwordCorrect=await bcrypt.compare(password,passwordHash);
+            const passwordCorrect=await bcrypt.compare(password,existingUser.passwordHash);
             if(!passwordCorrect)
             return res.status(401).json({errorMessage:"Wrong email or password"});
 
@@ -108,7 +108,7 @@ router.post("/login", async (req,res)=>{
            process.env.JWT_SECRET
         );
         
-       console.log(token);
+      // console.log(token);
 
         //send the token in a http - only cookie
 
@@ -122,6 +122,15 @@ router.post("/login", async (req,res)=>{
         console.log(err);
         res.status(500).send();
     }
-})
+});
+
+router.get("/logout",(req,res)=>{
+    res
+    .cookie("token","",{
+        httpOnly:true,
+        expires:new Date(0),
+    })
+    .send();
+});
 
 module.exports=router;
