@@ -77,7 +77,7 @@ router.post("/", async(req,res)=>{
 
         //login
 
-router.post("/login",(req,res)=>{
+router.post("/login", async (req,res)=>{
     try{
         const {email,password}=req.body;
 
@@ -87,7 +87,36 @@ router.post("/login",(req,res)=>{
          return res
          .status(400)
          .json({errorMessage:"Please enter all required fields"});
-         
+
+            //check existingUser
+
+         const existingUser= await User.findOne({email});
+         if(!existingUser)
+         return res.status(401).json({errorMessage:"Wrong email or password"});
+
+        //compare password
+
+            const passwordCorrect=await bcrypt.compare(password,passwordHash);
+            if(!passwordCorrect)
+            return res.status(401).json({errorMessage:"Wrong email or password"});
+
+              //sign the token
+        const token=jwt.sign(
+            {
+                user:existingUser._id
+            },
+           process.env.JWT_SECRET
+        );
+        
+       console.log(token);
+
+        //send the token in a http - only cookie
+
+        res
+        .cookie("token",token,{
+            httpOnly:true,
+        })
+        .send();
 
     }catch(err){
         console.log(err);
