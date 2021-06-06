@@ -27,7 +27,7 @@ router.post("/", async(req,res)=>{
         // find exisst users
 
         const existingUser= await User.findOne({email});
-        console.log(existingUser);
+       // console.log(existingUser);
 
             
         if(existingUser)
@@ -39,7 +39,7 @@ router.post("/", async(req,res)=>{
 
         const salt=await bcrypt.genSalt();
         const passwordHash= await bcrypt.hash(password,salt);
-        console.log(passwordHash);
+        // console.log(passwordHash);
 
          //   save to database
         const newUser=new User({
@@ -48,16 +48,23 @@ router.post("/", async(req,res)=>{
 
         const savedUser=await newUser.save();
 
-        //log the user in
+       //sign the token
         const token=jwt.sign(
             {
                 user:savedUser._id
             },
-            process.env.JWT_SECRET
+           process.env.JWT_SECRET
         );
         
-        console.log(token);
+       console.log(token);
 
+        //send the token in a http - only cookie
+
+        res
+        .cookie("token",token,{
+            httpOnly:true,
+        })
+        .send();
 
     }catch(err){
         console.error(err);
